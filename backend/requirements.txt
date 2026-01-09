@@ -1,0 +1,10 @@
+fastapi
+uvicorn
+pydantic
+sqlalchemy
+psycopg2-binary
+firebase-admin
+boto3
+python-dotenv
+python-dateutil
+pytz
