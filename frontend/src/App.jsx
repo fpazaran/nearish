@@ -2,10 +2,17 @@ import { useState } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
+import { auth, googleProvider } from './firebaseConfig'
+import { signInWithPopup } from 'firebase/auth'
 
 function App() {
-  const [count, setCount] = useState(0)
-
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, googleProvider)
+    } catch (error) {
+      console.error(error)
+    }
+  }
   return (
     <>
       <div>
@@ -18,8 +25,8 @@ function App() {
       </div>
       <h1>Vite + React</h1>
       <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+        <button onClick={handleGoogleSignIn}>
+          Sign in with Google
         </button>
         <p>
           Edit <code>src/App.jsx</code> and save to test HMR
