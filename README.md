@@ -4,7 +4,7 @@
 
 It gives couples a space to plan visits, count down to seeing each other, organize daily activities, save memories with photos or videos, and keep shared wishlists.
 
-This project is currently under active development. See [Setup.md](Setup.md) for app setup instructions
+This project is currently under active development. See [setup.md](setup.md) for app setup instructions
 
 ---
 
