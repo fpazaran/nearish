@@ -43,7 +43,7 @@ This project is currently under active development. See [setup.md](setup.md) for
 
 ---
 
-## 🧱 Tech Stack
+## Tech Stack
 
 ### Frontend
 - React
@@ -59,14 +59,14 @@ This project is currently under active development. See [setup.md](setup.md) for
 
 ---
 
-## 📐 Design
+## Design
 
 **Figma Prototype:**  
 https://www.figma.com/design/j6v6r3BGDCvw9iIf1iSzXt/Untitled
 
 ---
 
-## 🔌 API Overview
+## API Overview
 
 The backend exposes REST endpoints for:
 - Authentication & couple connection
