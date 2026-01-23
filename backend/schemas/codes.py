@@ -8,4 +8,4 @@ class invite_code(Base):
     used = Column(Boolean, nullable=False, default=False)
     couple_id = Column(Integer, ForeignKey("couples.id"), nullable=False, unique=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
-    expires_at = Column(DateTime, nullable=False, default=(datetime.now + timedelta(days=1)))
+    expires_at = Column(DateTime, nullable=False, default=lambda: datetime.now() + timedelta(days=1))
