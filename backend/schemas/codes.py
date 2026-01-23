@@ -1,4 +1,4 @@
-from sqlalchemy import Column, DateTime, Boolean, Integer
+from sqlalchemy import Column, DateTime, Boolean, Integer, ForeignKey
 from datetime import datetime, timedelta
 from db.db import Base
 
@@ -6,6 +6,6 @@ class invite_code(Base):
     __tablename__ = "invite_codes"
     code = Column(Integer, nullable=False, primary_key=True)
     used = Column(Boolean, nullable=False, default=False)
-    couple_id = Column(Integer, nullable=False, unique=True, foreign_key="couples.id")
+    couple_id = Column(Integer, ForeignKey("couples.id"), nullable=False, unique=True)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
     expires_at = Column(DateTime, nullable=False, default=(datetime.now + timedelta(days=1)))

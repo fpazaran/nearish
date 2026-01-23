@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, Boolean
+from sqlalchemy import Column, Integer, String, DateTime, Boolean, ForeignKey
 from datetime import datetime
 from db.db import Base
 
@@ -6,7 +6,7 @@ class Wish(Base):
   __tablename__ = "wishes"
 
   id = Column(Integer, nullable=False, primary_key=True)
-  uid = Column(Integer, nullable=False, foreign_key="users.id")
+  uid = Column(Integer, ForeignKey("users.id"), nullable=False)
   description = Column(String, nullable=False)
   category = Column(String, nullable=False)
   link = Column(String, nullable=True)
