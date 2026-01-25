@@ -1,64 +1,43 @@
-import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import googleIcon from "../../assets/google-icon.png";
 import PrivacyPolicy from "../../components/buttons/PrivacyPolicy";
 import TermsOfService from "../../components/buttons/TermsOfService";
 import { useAuth } from "../../contexts/AuthContext";
-import SquareRounded from "../../components/SquareRounded";
 import { LuCalendarHeart } from "react-icons/lu";
 import { MdOutlinePhotoCameraBack } from "react-icons/md";
 import { FaRandom } from "react-icons/fa";
 import { BsStars } from "react-icons/bs";
+import { getMe } from "../../api/backend/auth";
+import { useUser } from "../../contexts/UserContext";
+
+// components
+import SquareRounded from "../../components/SquareRounded";
+import Background from "../../components/Background";
+import Loading from "../Loading";
 
 
 
 export default function LandingPage() {
   const auth = useAuth();
-  const navigate = useNavigate();
-  const [checkingCouple, setCheckingCouple] = useState(false);
+  const user = useUser();
 
-  // Redirect based on couple status
-  // useEffect(() => {
-  //   async function checkCoupleStatus() {
-  //     if (auth.loading || !auth.currentUser) return;
-
-  //     setCheckingCouple(true);
-  //     try {
-  //       // TODO: Replace with actual API call to check couple status
-  //       // const response = await fetch(`/api/users/${auth.currentUser.uid}`);
-  //       // const userData = await response.json();
-
-  //       // For now, placeholder logic - you'll need to implement the API call
-  //       const hasCouple = false; // Replace with: userData.couple !== undefined
-
-  //       if (hasCouple) {
-  //         navigate("/home");
-  //       } else {
-  //         navigate("/create-join");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error checking couple status:", error);
-  //     } finally {
-  //       setCheckingCouple(false);
-  //     }
-  //   }
-
-  //   checkCoupleStatus();
-  // }, [auth.currentUser, auth.loading, navigate]);
+  const handleSignInWithGoogle = async () => {
+    try {
+      await auth.handleSignInWithGoogle();
+      user.setMe(await getMe());
+    } catch (error) {
+      console.error("Error signing in with Google:", error);
+    }
+  };
 
   // Show loading while checking auth state or couple status
-  if (auth.loading || checkingCouple) {
+  if (auth.loading || user.loading) {
     return (
-      <div className="flex items-center justify-center h-screen w-screen bg-[var(--bg_pink)]">
-        <div className="text-2xl text-[var(--darker_pink)] font-medium">
-          Loading...
-        </div>
-      </div>
+      <Loading />
     );
   }
 
   return (
-    <div className="flex flex-col w-screen h-screen bg-[var(--bg_pink)] justify-center items-center">
+    <Background>
       {/* main content*/}
       <div className="flex-5 flex flex-row w-full h-full justify-center">
         <div className="flex flex-row w-full h-full max-w-7xl px-10">
@@ -78,7 +57,7 @@ export default function LandingPage() {
             </div>
             <button
               className="bg-[var(--lightest_pink)] px-6 py-2 rounded-full flex flex-row items-center gap-2 shadow-lg/5 min-w-58 transition-opacity duration-300 ease-in-out active:opacity-30"
-              onClick={auth.handleSignInWithGoogle}
+              onClick={handleSignInWithGoogle}
             >
               <img src={googleIcon} alt="Google Icon" className="w-4 h-4" />
               <div className="text-[var(--darker_pink)] font-medium">
@@ -125,6 +104,6 @@ export default function LandingPage() {
           <TermsOfService />
         </div>
       </div>
-    </div>
+    </Background>
   );
 }
