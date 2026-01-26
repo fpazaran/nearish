@@ -1,11 +1,9 @@
 import firebase_admin
 from firebase_admin import credentials, auth
 from fastapi import HTTPException, Header, Depends # FastAPI components for dependency
-import os
-import json
 
 # Retrieve the service account key JSON string from the environment variable
-service_account_key_json = os.environ.get("FIREBASE_SERVICE_ACCOUNT_KEY")
+service_account_key_json = "nearish-1e849-firebase-adminsdk-fbsvc-e83d48ac93.json"
 
 # Initialize Firebase Admin SDK
 cred = credentials.Certificate(service_account_key_json)

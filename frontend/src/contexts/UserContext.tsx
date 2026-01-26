@@ -1,6 +1,6 @@
 import { Couple, User } from "../types/user.ts";
 import { createContext, useContext, useState, useEffect } from "react";
-import { getMe, postName } from "../api/backend/auth.ts";
+import { getMe, updateName as updateNameApi } from "../api/backend/auth.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
@@ -70,7 +70,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   async function updateName(name: string, onSaveFailed: () => void) {
     try {
       setLoading(true);
-      await postName(name);
+      await updateNameApi(name);
       setName(name);
     } catch (error) {
       onSaveFailed();

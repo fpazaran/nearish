@@ -1,5 +1,6 @@
-from services.auth import me
+from services.auth import me, update_name
 from schemas.user import User, Couple
+from sqlalchemy import select
 
 def test_init_new_user(db):
     """Case 1: User doesn't exist - should be initialized with empty name."""
@@ -62,3 +63,14 @@ def test_get_user_with_incomplete_couple(db):
     result = me(uid=uid, db=db)
     assert result.couple.id == 2
     assert result.couple.partner is None
+
+def test_update_name(db):
+    """Case 5: Update user name."""
+    uid = "update-user"
+    db.add(User(id=uid, name=""))
+    db.commit()
+    
+    update_name(name="New Name", uid=uid, db=db)
+    user = db.execute(select(User).where(User.id == uid)).scalar_one()
+
+    assert user.name == "New Name"

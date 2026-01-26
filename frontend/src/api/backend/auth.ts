@@ -47,9 +47,9 @@ export async function getMe(): Promise<User> {
  * Updates the current user's name
  * Returns true if the name was updated successfully, false otherwise
  */
-export async function postName(name: string): Promise<boolean> {
-  const response = await authenticatedFetch('/auth/name', {
-    method: 'POST',
+export async function updateName(name: string): Promise<boolean> {
+  const response = await authenticatedFetch('/auth/update-name', {
+    method: 'PATCH',
     body: JSON.stringify({ name }),
   });
   if (!response.ok) {
