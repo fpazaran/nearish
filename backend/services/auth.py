@@ -5,7 +5,9 @@ from fastapi import Depends
 from sqlalchemy import select, or_
 from models.auth import MeResponse, CoupleResponse, PartnerResponse
 from schemas.user import Couple
-
+from schemas.codes import invite_code
+import random
+from datetime import datetime, timedelta
 
 def me(uid: str, db: Session = Depends(get_db)):
   """
@@ -51,6 +53,57 @@ def update_name(name: str, uid: str, db: Session = Depends(get_db)):
     db.rollback()
     raise Exception(f"Failed to update name: {str(e)}")
 
+def create_code(uid: str, db: Session = Depends(get_db)):
+  """
+  Creates a new code for the user.
+  """
+  try:
+    # check if user already has an existing code
+    couple = db.execute(select(Couple).where(or_(Couple.partner1_uid == uid, Couple.partner2_uid == uid))).scalar_one_or_none()
+    if couple is not None:
+      if couple.partner2_uid is not None:
+        raise Exception("User is already in a couple")
+
+      existing_code = db.execute(select(invite_code).where(invite_code.couple_id == couple.id)).scalar_one_or_none()
+      if existing_code is not None and existing_code.used:
+        raise Exception("Code is already used")
+
+      # if code is not expired, return the code
+      if existing_code is not None and not is_expired(existing_code):
+        return existing_code.code
+    
+      # if code is expired, delete the code and create a new one
+      if (existing_code is not None and is_expired(existing_code)):
+        db.delete(existing_code)
+        db.commit()
+    else:
+      couple = create_couple(uid, db)
+      db.commit()  # Commit the couple so we have an ID
+      db.refresh(couple)  # Refresh to get the ID
+    
+    new_code = random.randint(100000, 999999)
+    
+    code = db.execute(select(invite_code).where(invite_code.code == new_code)).scalar_one_or_none()
+    while code is not None:
+      if not usable_code(code):
+        code.code = new_code
+        code.couple_id = couple.id
+        code.expires_at = datetime.now() + timedelta(minutes=30)
+        code.used = False
+        db.commit()
+        return code.code
+      new_code = random.randint(100000, 999999)
+      code = db.execute(select(invite_code).where(invite_code.code == new_code)).scalar_one_or_none()
+    
+    code = invite_code(code=new_code, couple_id=couple.id, expires_at=datetime.now() + timedelta(minutes=30))
+    db.add(code)
+    db.commit()
+    return code.code
+    
+  except Exception as e:
+    db.rollback()
+    raise Exception(f"Failed to create code: {str(e)}")
+
 """
 HELPER FUNCTIONS
 """
@@ -66,3 +119,28 @@ def init_user(uid: str, db: Session = Depends(get_db)):
   except Exception as e:
     db.rollback()
     raise Exception(f"Failed to create user: {str(e)}")
+
+def create_couple(uid: str, db: Session = Depends(get_db)):
+  """
+  Creates a new couple in the database.
+  Returns the couple.
+  """
+  try:
+    couple = Couple(partner1_uid=uid, partner2_uid=None)
+    db.add(couple)
+    return couple
+  except Exception as e:
+    db.rollback()
+    raise Exception(f"Failed to create couple: {str(e)}")
+
+def is_expired(code: invite_code):
+  """
+  Checks if the code is expired.
+  """
+  return code.expires_at < datetime.now()
+
+def usable_code(code: invite_code):
+  """
+  Checks if the code is usable.
+  """
+  return not code.used and not is_expired(code)

@@ -13,3 +13,6 @@ class MeResponse(BaseModel):
     uid: str
     name: str
     couple: Optional[CoupleResponse] = None
+
+class CreateCodeResponse(BaseModel):
+    code: int

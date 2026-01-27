@@ -32,3 +32,13 @@ def update_name(name: str = Body(..., embed=True), uid: str = Depends(get_curren
       raise HTTPException(status_code=500, detail="Failed to update name")
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/create-code", response_model=int)
+def create_code(uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
+  try:
+    code = auth.create_code(uid, db)
+    if code is None:
+      raise HTTPException(status_code=500, detail="Failed to create code")
+    return code
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
