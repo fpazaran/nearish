@@ -1,7 +1,7 @@
 import React from 'react'
 
 interface BackgroundProps {
-  children: React.ReactNode;
+  children?: React.ReactNode;
 }
 
 function Background({ children }: BackgroundProps) {

@@ -10,6 +10,8 @@ import LandingPage from './pages/connect-flow/LandingPage';
 import HomePage from './pages/connect-flow/HomePage';
 import CreateJoinPage from './pages/connect-flow/CreateJoinPage';
 import EnterNamePage from './pages/connect-flow/EnterNamePage';
+import CreateCodePage from './pages/connect-flow/CreateCodePage';
+import EnterCodePage from './pages/connect-flow/EnterCodePage';
 
 function App() {
   return (
@@ -45,7 +47,22 @@ function App() {
                 </ProtectedRoute>
               } 
             />
-            
+            <Route 
+              path="/create-code" 
+              element={
+                <ProtectedRoute>
+                  <CreateCodePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/enter-code" 
+              element={
+                <ProtectedRoute>
+                  <EnterCodePage />
+                </ProtectedRoute>
+              } 
+            />
             {/* Catch all - redirect to landing or home based on auth */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -21,6 +21,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [name, setName] = useState<string>("");
   const [couple, setCouple] = useState<Couple | undefined>(undefined);
   const [loading, setLoading] = useState(true);
+  const [hasRedirected, setHasRedirected] = useState(false);
   
   const { currentUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -45,10 +46,10 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     fetchUser();
   }, [currentUser, authLoading]);
 
-  // 2. Handle redirection based on couple status
+  // 2. Handle redirection based on couple status (only once on initial load)
   useEffect(() => {
-    // Only redirect if we are finished loading and have a user
-    if (!loading && uid) {
+    // Only redirect if we are finished loading and have a user and haven't redirected yet
+    if (!loading && uid && !hasRedirected) {
       if (couple && couple.partner) {
         navigate("/home");
       } else {
@@ -58,8 +59,9 @@ export default function UserProvider({ children }: { children: React.ReactNode }
           navigate("/create-join");
         }
       }
+      setHasRedirected(true);
     }
-  }, [loading, uid, couple, navigate]);
+  }, [loading, uid, name, couple, navigate, hasRedirected]);
 
   function setMe(me: User) {
     setUid(me.uid);
@@ -72,6 +74,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       setLoading(true);
       await updateNameApi(name);
       setName(name);
+      // Navigate to create-join page after successfully updating name
+      navigate("/create-join");
     } catch (error) {
       onSaveFailed();
     } finally {

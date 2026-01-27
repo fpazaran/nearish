@@ -57,3 +57,15 @@ export async function updateName(name: string): Promise<boolean> {
   }
   return response.ok;
 }
+
+/**
+ * Creates a new code for the current user
+ * Returns the code if it was created successfully, undefined otherwise
+ */
+export async function createCode(): Promise<string> {
+  const response = await authenticatedFetch('/auth/create-code');
+  if (!response.ok) {
+    throw new Error('Failed to create code');
+  }
+  return response.json();
+}
