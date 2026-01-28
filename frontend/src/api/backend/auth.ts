@@ -1,4 +1,4 @@
-import { User } from '../../types/user';
+import { Invite, User } from '../../types/user';
 import { authenticatedFetch } from './apiClient';
 
 interface PartnerResponse {
@@ -62,10 +62,11 @@ export async function updateName(name: string): Promise<boolean> {
  * Creates a new code for the current user
  * Returns the code if it was created successfully, undefined otherwise
  */
-export async function createCode(): Promise<string> {
+export async function createCode(): Promise<Invite> {
   const response = await authenticatedFetch('/auth/create-code');
   if (!response.ok) {
     throw new Error('Failed to create code');
   }
-  return response.json();
+  const inviteCode: Invite = await response.json();
+  return inviteCode;
 }

@@ -6,18 +6,43 @@ import RoundedShadowBox from '../../components/containers/RoundedShadowBox'
 import { FiCopy } from "react-icons/fi";
 import { useNavigate } from 'react-router-dom'
 import BackButtonRect from '../../components/buttons/BackButtonRect'
+import { useUser } from '../../contexts/UserContext'
+import { getMe } from '../../api/backend/auth'
+import AlertModal from '../../modals/AlertModal'
 
 
 function CreateCodePage() {
-  const [code, setCode] = useState('')
-  const navigate = useNavigate()
+  const user = useUser()
+  const [copied, setCopied] = useState(false)
+  const [alertOpen, setAlertOpen] = useState(false)
+  const [alertMessage, setAlertMessage] = useState('')
 
   useEffect(() => {
     const handleCreateCode = async () => {
-      setCode(await createCode())
+      const code = await createCode();
+      console.log(code)
+      user.setInviteCode(code)
     }
     handleCreateCode()
   }, [])
+  
+  const handleCopyCode = () => {
+    if (user.inviteCode) {
+      navigator.clipboard.writeText(user.inviteCode.code.toString())
+      setCopied(true)
+      setTimeout(() => setCopied(false), 2000) // Reset after 2 seconds
+    }
+  }
+
+  const handleSharedCode = async () => { 
+    const me = await getMe()
+    // if user does not have a partner yet, notify user
+    if (me.couple && !me.couple.partner) {
+      setAlertMessage("Your partner has not joined yet. Please wait for them to join.")
+      setAlertOpen(true)
+    }
+    user.setMe(me)
+  }
   
   return (
     <Background>
@@ -39,23 +64,31 @@ function CreateCodePage() {
               Here is  your invite code:
             </div>
             <div className="w-full h-24 flex flex-row items-center justify-center tracking-[0.3em] text-6xl font-medium text-[var(--lightest_pink)] text-center bg-[var(--darker_pink)] rounded-2xl px-4 py-2 leading-none">
-              <span className="-mr-[0.3em]">{code ? code : '123456'}</span>
+              <span className="-mr-[0.3em]">{user.inviteCode ? user.inviteCode.code : '...'}</span>
             </div>
             <div className="w-full h-12 flex flex-row items-center justify-center text-lg font-medium text-[var(--medium_pink)] text-center">
               Share this with your partner for them to join your shared space.
             </div>
             <div className="w-full h-12 flex flex-row items-center justify-center bg-[var(--bg_pink)] text-[var(--darker_pink)] font-bold text-lg 
-                            px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity gap-2 select-none">
+                            px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity gap-2 select-none"
+                            onClick={handleCopyCode}>
               <FiCopy className="w-6 h-6 font-bold" />
-              Copy Code
+              {copied ? 'Copied!' : 'Copy Code'}
             </div>
           </RoundedShadowBox>
           <div className="w-full h-12 flex flex-row items-center justify-center bg-[var(--darker_pink)] text-[var(--lightest_pink)] font-medium text-lg 
-                          px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity shadow-xl select-none">
+                          px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity shadow-xl select-none"
+                          onClick={handleSharedCode}>
             I've Shared My Code
           </div>
         </div>
       </div>
+      
+      <AlertModal 
+        message={alertMessage}
+        onClose={() => setAlertOpen(false)}
+        isOpen={alertOpen}
+      />
     </Background>
   )
 }

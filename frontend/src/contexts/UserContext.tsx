@@ -1,4 +1,4 @@
-import { Couple, User } from "../types/user.ts";
+import { Couple, Invite, User } from "../types/user.ts";
 import { createContext, useContext, useState, useEffect } from "react";
 import { getMe, updateName as updateNameApi } from "../api/backend/auth.ts";
 import { useNavigate } from "react-router-dom";
@@ -9,8 +9,10 @@ type UserContext = {
   name: string;
   couple: Couple | undefined;
   loading: boolean; // Add loading state
+  inviteCode?: Invite;
   setMe: (me: User) => void;
   setCouple: (couple: Couple) => void;
+  setInviteCode: (inviteCode: Invite) => void;
   updateName: (name: string, onSaveFailed: () => void) => void;
 };
 
@@ -22,7 +24,8 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [couple, setCouple] = useState<Couple | undefined>(undefined);
   const [loading, setLoading] = useState(true);
   const [hasRedirected, setHasRedirected] = useState(false);
-  
+  const [inviteCode, setInviteCode] = useState<Invite | undefined>(undefined);
+
   const { currentUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
 
@@ -84,7 +87,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }
 
   return (
-    <UserContext.Provider value={{ uid, name, couple, loading, setMe, setCouple, updateName }}>
+    <UserContext.Provider value={{ uid, name, couple, loading, inviteCode, setMe, setCouple, updateName, setInviteCode }}>
       {children}
     </UserContext.Provider>
   );

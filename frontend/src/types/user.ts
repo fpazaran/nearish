@@ -13,6 +13,6 @@ export interface Couple {
 }
 
 export interface Invite {
-  invite_code: string;
+  code: number;
   expires_at: number;
 }
