@@ -1,4 +1,4 @@
-import { Invite, User } from '../../types/user';
+import { Couple, Invite, User } from '../../types/user';
 import { authenticatedFetch } from './apiClient';
 
 interface PartnerResponse {
@@ -69,4 +69,21 @@ export async function createCode(): Promise<Invite> {
   }
   const inviteCode: Invite = await response.json();
   return inviteCode;
+}
+
+
+/**
+ * Joins a couple using an invite code
+ * Returns the couple if it was joined successfully, undefined otherwise
+ */
+export async function joinCouple(code: string): Promise<Couple> {
+  const response = await authenticatedFetch('/auth/join-couple', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+  if (!response.ok) {
+    throw new Error('Failed to join couple');
+  }
+  const couple: Couple = await response.json();
+  return couple;
 }

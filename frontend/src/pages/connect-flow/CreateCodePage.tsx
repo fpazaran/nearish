@@ -9,6 +9,7 @@ import BackButtonRect from '../../components/buttons/BackButtonRect'
 import { useUser } from '../../contexts/UserContext'
 import { getMe } from '../../api/backend/auth'
 import AlertModal from '../../modals/AlertModal'
+import RedRoundedRect from '../../components/buttons/RedRoundedRect'
 
 
 function CreateCodePage() {
@@ -76,11 +77,7 @@ function CreateCodePage() {
               {copied ? 'Copied!' : 'Copy Code'}
             </div>
           </RoundedShadowBox>
-          <div className="w-full h-12 flex flex-row items-center justify-center bg-[var(--darker_pink)] text-[var(--lightest_pink)] font-medium text-lg 
-                          px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity shadow-xl select-none"
-                          onClick={handleSharedCode}>
-            I've Shared My Code
-          </div>
+          <RedRoundedRect onClick={handleSharedCode}>I've Shared My Code</RedRoundedRect>
         </div>
       </div>
       
