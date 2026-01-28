@@ -1,5 +1,5 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
-from models.auth import MeResponse
+from models.auth import MeResponse, CreateCodeResponse
 from auth.firebase import get_current_firebase_uid
 from services import auth
 from sqlalchemy.orm import Session
@@ -33,12 +33,12 @@ def update_name(name: str = Body(..., embed=True), uid: str = Depends(get_curren
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
 
-@router.get("/create-code", response_model=int)
+@router.get("/create-code", response_model=CreateCodeResponse)
 def create_code(uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
   try:
     code = auth.create_code(uid, db)
     if code is None:
       raise HTTPException(status_code=500, detail="Failed to create code")
-    return code
+    return CreateCodeResponse(code=code.code, expires_at=code.expires_at)
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))

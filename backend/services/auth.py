@@ -70,7 +70,7 @@ def create_code(uid: str, db: Session = Depends(get_db)):
 
       # if code is not expired, return the code
       if existing_code is not None and not is_expired(existing_code):
-        return existing_code.code
+        return existing_code
     
       # if code is expired, delete the code and create a new one
       if (existing_code is not None and is_expired(existing_code)):
@@ -91,14 +91,14 @@ def create_code(uid: str, db: Session = Depends(get_db)):
         code.expires_at = datetime.now() + timedelta(minutes=30)
         code.used = False
         db.commit()
-        return code.code
+        return code
       new_code = random.randint(100000, 999999)
       code = db.execute(select(invite_code).where(invite_code.code == new_code)).scalar_one_or_none()
     
     code = invite_code(code=new_code, couple_id=couple.id, expires_at=datetime.now() + timedelta(minutes=30))
     db.add(code)
     db.commit()
-    return code.code
+    return code
     
   except Exception as e:
     db.rollback()

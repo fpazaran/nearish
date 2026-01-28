@@ -1,3 +1,4 @@
+from datetime import datetime
 from pydantic import BaseModel
 from typing import Optional
 
@@ -16,3 +17,4 @@ class MeResponse(BaseModel):
 
 class CreateCodeResponse(BaseModel):
     code: int
+    expires_at: datetime
