@@ -8,7 +8,7 @@ class Memory(Base):
     id = Column(Integer, nullable=False, primary_key=True)
     visit_id = Column(Integer, ForeignKey("visits.id"), nullable=False)
     created_by = Column(String, nullable=False)
-    created_by_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    created_by_id = Column(String, ForeignKey("users.id"), nullable=False)
     note = Column(String, nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.now)
 

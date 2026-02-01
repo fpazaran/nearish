@@ -1,18 +1,18 @@
-interface User {
+export interface User {
   uid: string;
   name: string;
   couple?: Couple;
 }
 
-interface Couple {
-  id: string;
-  partner: {
+export interface Couple {
+  id: number;
+  partner?: {
     uid: string;
     name: string;
   }
 }
 
-interface Invite {
-  invite_code: string;
+export interface Invite {
+  code: number;
   expires_at: number;
 }
