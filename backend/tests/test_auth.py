@@ -1,6 +1,8 @@
 from services.auth import me, update_name
 from schemas.user import User, Couple
 from sqlalchemy import select
+from datetime import datetime
+from services.auth import create_code, join_couple
 
 def test_init_new_user(db):
     """Case 1: User doesn't exist - should be initialized with empty name."""
@@ -74,3 +76,26 @@ def test_update_name(db):
     user = db.execute(select(User).where(User.id == uid)).scalar_one()
 
     assert user.name == "New Name"
+
+def test_create_code(db):
+    """Case 6: Create a new code."""
+    uid = "create-user"
+    db.add(User(id=uid, name=""))
+    db.commit()
+    
+    code = create_code(uid=uid, db=db)
+    assert code.code is not None
+    assert code.expires_at is not None
+    assert code.expires_at > datetime.now()
+
+def test_join_couple(db):
+    """Case 7: Join a couple using a code."""
+    uid = "join-user"
+    db.add(User(id=uid, name=""))
+    db.commit()
+    
+    code = create_code(uid=uid, db=db)
+    
+    couple = join_couple(code.code, uid, db)
+    assert couple.id is not None
+    assert couple.partner.uid is not None

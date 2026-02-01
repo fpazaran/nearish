@@ -76,10 +76,10 @@ export async function createCode(): Promise<Invite> {
  * Joins a couple using an invite code
  * Returns the couple if it was joined successfully, undefined otherwise
  */
-export async function joinCouple(code: string): Promise<Couple> {
+export async function joinCouple(invite_code: number): Promise<Couple> {
   const response = await authenticatedFetch('/auth/join-couple', {
     method: 'POST',
-    body: JSON.stringify({ code }),
+    body: JSON.stringify({ invite_code }),
   });
   if (!response.ok) {
     throw new Error('Failed to join couple');

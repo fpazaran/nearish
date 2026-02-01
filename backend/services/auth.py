@@ -65,9 +65,7 @@ def create_code(uid: str, db: Session = Depends(get_db)):
         raise Exception("User is already in a couple")
 
       existing_code = db.execute(select(invite_code).where(invite_code.couple_id == couple.id)).scalar_one_or_none()
-      if existing_code is not None and existing_code.used:
-        raise Exception("Code is already used")
-
+      
       # if code is not expired, return the code
       if existing_code is not None and not is_expired(existing_code):
         return existing_code
@@ -85,11 +83,10 @@ def create_code(uid: str, db: Session = Depends(get_db)):
     
     code = db.execute(select(invite_code).where(invite_code.code == new_code)).scalar_one_or_none()
     while code is not None:
-      if not usable_code(code):
+      if not is_expired(code):
         code.code = new_code
         code.couple_id = couple.id
         code.expires_at = datetime.now() + timedelta(minutes=30)
-        code.used = False
         db.commit()
         return code
       new_code = random.randint(100000, 999999)
@@ -103,6 +100,27 @@ def create_code(uid: str, db: Session = Depends(get_db)):
   except Exception as e:
     db.rollback()
     raise Exception(f"Failed to create code: {str(e)}")
+
+def join_couple(inv_code: int, uid: str, db: Session = Depends(get_db)) -> CoupleResponse | None:
+  """
+  Joins a couple using an invite code.
+  Returns the couple.
+  """
+  try:
+    code = db.execute(select(invite_code).where(invite_code.code == inv_code)).scalar_one_or_none()
+    if code is None:
+      return None
+    if is_expired(code):    
+      return None
+    couple = db.execute(select(Couple).where(Couple.id == code.couple_id)).scalar_one_or_none()
+    couple.partner2_uid = uid
+    partner = db.execute(select(User).where(User.id == couple.partner1_uid)).scalar_one_or_none()
+    db.delete(code)  # Delete the code after successful join
+    db.commit()
+    return CoupleResponse(id=couple.id, partner=PartnerResponse(uid=partner.id, name=partner.name))
+  except Exception as e:
+    db.rollback()
+    raise Exception(f"Failed to join couple: {str(e)}")
 
 """
 HELPER FUNCTIONS
@@ -138,9 +156,3 @@ def is_expired(code: invite_code):
   Checks if the code is expired.
   """
   return code.expires_at < datetime.now()
-
-def usable_code(code: invite_code):
-  """
-  Checks if the code is usable.
-  """
-  return not code.used and not is_expired(code)

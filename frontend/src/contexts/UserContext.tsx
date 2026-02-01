@@ -66,6 +66,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
     }
   }, [loading, uid, name, couple, navigate, hasRedirected]);
 
+  // 3. Handle navigation when couple is joined after initial load
+  useEffect(() => {
+    // If user already went through initial redirect and now joins a couple, navigate to home
+    if (hasRedirected && couple && couple.partner) {
+      navigate("/home");
+    }
+  }, [couple, hasRedirected, navigate]);
+
   function setMe(me: User) {
     setUid(me.uid);
     setName(me.name);

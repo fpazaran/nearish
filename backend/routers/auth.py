@@ -1,5 +1,5 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
-from models.auth import MeResponse, CreateCodeResponse
+from fastapi import APIRouter, Depends, HTTPException
+from models.auth import MeResponse, UpdateNameRequest, CreateCodeResponse, JoinCoupleRequest, CoupleResponse
 from auth.firebase import get_current_firebase_uid
 from services import auth
 from sqlalchemy.orm import Session
@@ -15,9 +15,9 @@ def me(uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_d
     raise HTTPException(status_code=500, detail=str(e))
 
 @router.patch("/update-name", status_code=204)
-def update_name(name: str = Body(..., embed=True), uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
+def update_name(request: UpdateNameRequest, uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
   # Parse and normalize the name
-  name = name.strip()  # Remove leading/trailing whitespace
+  name = request.name.strip()  # Remove leading/trailing whitespace
   name = " ".join(name.split())  # Normalize multiple spaces to single space
   
   # Validate the parsed name
@@ -40,5 +40,17 @@ def create_code(uid: str = Depends(get_current_firebase_uid), db: Session = Depe
     if code is None:
       raise HTTPException(status_code=500, detail="Failed to create code")
     return CreateCodeResponse(code=code.code, expires_at=code.expires_at)
+  except Exception as e:
+    raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/join-couple", response_model=CoupleResponse)
+def join_couple(request: JoinCoupleRequest, uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
+  try:
+    couple = auth.join_couple(request.invite_code, uid, db)
+    if couple is None:
+      raise HTTPException(status_code=400, detail="Invite code is invalid or has expired")
+    return couple
+  except HTTPException:
+    raise
   except Exception as e:
     raise HTTPException(status_code=500, detail=str(e))
