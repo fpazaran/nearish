@@ -24,6 +24,3 @@ class CreateCodeResponse(BaseModel):
 
 class JoinCoupleRequest(BaseModel):
     invite_code: int
-
-class JoinCoupleResponse(BaseModel):
-    couple: CoupleResponse
