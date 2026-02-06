@@ -8,7 +8,7 @@ type TextButtonProps = {
 
 function TextButton({ text, onClick, className }: TextButtonProps) {
   return (
-    <button className={`transition-opacity duration-300 ease-in-out active:opacity-20 ${className}`} onClick={onClick}>
+    <button className={`select-none transition-opacity duration-300 ease-in-out active:opacity-20 ${className}`} onClick={onClick}>
       <div className="text-2xl font-medium text-[var(--darker_pink)]">{text}</div>
     </button>
   )
