@@ -7,11 +7,14 @@ import UserProvider from './contexts/UserContext';
 import LandingPage from './pages/connect-flow/LandingPage';
 
 // Protected pages
-import HomePage from './pages/connect-flow/HomePage';
+import HomePage from './pages/HomePage';
 import CreateJoinPage from './pages/connect-flow/CreateJoinPage';
 import EnterNamePage from './pages/connect-flow/EnterNamePage';
 import CreateCodePage from './pages/connect-flow/CreateCodePage';
 import EnterCodePage from './pages/connect-flow/EnterCodePage';
+import ActivitiesPage from './pages/activites-flow/ActivitiesPage';
+import VisitsPage from './pages/visits-flow/VisitsPage';
+import WishesPage from './pages/WishesPage';
 
 function App() {
   return (
@@ -28,6 +31,30 @@ function App() {
               element={
                 <ProtectedRoute>
                   <HomePage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/activities" 
+              element={
+                <ProtectedRoute>
+                  <ActivitiesPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/visits" 
+              element={
+                <ProtectedRoute>
+                  <VisitsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/wishes" 
+              element={
+                <ProtectedRoute>
+                  <WishesPage />
                 </ProtectedRoute>
               } 
             />
