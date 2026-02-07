@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProvider from './contexts/UserContext';
+import HomeProvider from './contexts/HomeContext';
 
 // Public pages
 import LandingPage from './pages/connect-flow/LandingPage';
@@ -21,6 +22,7 @@ function App() {
     <AuthProvider>
       <BrowserRouter>
         <UserProvider>
+          <HomeProvider>
           <Routes>
             {/* Public Routes */}
             <Route path="/" element={<LandingPage />} />
@@ -93,6 +95,7 @@ function App() {
             {/* Catch all - redirect to landing or home based on auth */}
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
+          </HomeProvider>
         </UserProvider>
       </BrowserRouter>
     </AuthProvider>
