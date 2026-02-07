@@ -1,6 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from routers import auth as auth_router
+from routers import home as home_router
 
 app = FastAPI()
 
@@ -13,6 +14,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router.router)
+app.include_router(home_router.router)
 
 @app.get("/")
 def root():
