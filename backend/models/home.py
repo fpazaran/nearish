@@ -1,6 +1,6 @@
 from enum import Enum
 from pydantic import BaseModel
-from datetime import datetime
+from datetime import date
 from typing import Optional
 class VisitState(Enum):
     PLANNED = "planned"
@@ -9,8 +9,8 @@ class VisitState(Enum):
 
 class Visit(BaseModel):
     id: int
-    start: datetime
-    end: datetime
+    start: date
+    end: date
     description: str
 
 class HomeResponse(BaseModel):
