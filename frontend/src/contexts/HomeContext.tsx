@@ -31,6 +31,7 @@ export default function HomeProvider({ children }: { children: React.ReactNode }
   // Only fetch when user has a couple and home hasn't been loaded yet
   useEffect(() => {
     if (couple && !home) {
+      console.log(couple.id)
       refreshHome()
     }
   }, [couple])
