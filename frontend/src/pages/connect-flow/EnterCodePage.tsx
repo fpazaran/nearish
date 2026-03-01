@@ -8,7 +8,6 @@ import { useUser } from '../../contexts/UserContext'
 
 function EnterCodePage() {
   const [digits, setDigits] = useState<string[]>(Array(6).fill(''))
-  const [loadingCouple, setLoadingCouple] = useState(false)
   const inputRefs = useRef<(HTMLInputElement | null)[]>([])
   const user = useUser()
 
@@ -39,14 +38,12 @@ function EnterCodePage() {
   const handleConnect = async () => {
     try {
       const code = parseInt(digits.join(''))
-      setLoadingCouple(true)
       const couple = await joinCouple(code)
       user.setCouple(couple)
     } catch (error) {
       console.error('Failed to join couple:', error)
       // TODO: Show error message to user
     }
-    setLoadingCouple(false)
   }
 
   return (

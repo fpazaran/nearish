@@ -1,10 +1,8 @@
 import Background from '../../components/Background'
 import { useState, useEffect } from 'react'
 import { createCode } from '../../api/backend/auth'
-import SquareRounded from '../../components/SquareRounded'
 import RoundedShadowBox from '../../components/containers/RoundedShadowBox'
 import { FiCopy } from "react-icons/fi";
-import { useNavigate } from 'react-router-dom'
 import BackButtonRect from '../../components/buttons/BackButtonRect'
 import { useUser } from '../../contexts/UserContext'
 import { getMe } from '../../api/backend/auth'
@@ -25,7 +23,7 @@ function CreateCodePage() {
       user.setInviteCode(code)
     }
     handleCreateCode()
-  }, [])
+  }, [user])
   
   const handleCopyCode = () => {
     if (user.inviteCode) {

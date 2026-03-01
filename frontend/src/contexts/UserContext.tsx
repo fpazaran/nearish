@@ -98,6 +98,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       // Navigate to create-join page after successfully updating name
       navigate("/create-join");
     } catch (error) {
+      console.error("Error updating name:", error);
       onSaveFailed();
     } finally {
       setLoading(false);
