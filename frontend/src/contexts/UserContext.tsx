@@ -1,5 +1,5 @@
 import { Couple, Invite, User } from "../types/user.ts";
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getMe, updateName as updateNameApi } from "../api/backend/auth.ts";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./AuthContext";
@@ -25,6 +25,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   const [loading, setLoading] = useState(true);
   const [hasRedirected, setHasRedirected] = useState(false);
   const [inviteCode, setInviteCode] = useState<Invite | undefined>(undefined);
+  const prevCoupleRef = useRef<Couple | undefined>(undefined);
 
   const { currentUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
@@ -68,10 +69,19 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   // 3. Handle navigation when couple is joined after initial load
   useEffect(() => {
-    // If user already went through initial redirect and now joins a couple, navigate to home
-    if (hasRedirected && couple && couple.partner) {
+    // Only navigate if:
+    // - Initial redirect has happened
+    // - Previous state had no couple or couple with no partner
+    // - New state has a couple with a partner
+    const hadNoPartner = !prevCoupleRef.current || !prevCoupleRef.current.partner;
+    const nowHasPartner = couple && couple.partner;
+    
+    if (hasRedirected && hadNoPartner && nowHasPartner) {
       navigate("/home");
     }
+    
+    // Update the ref for next comparison
+    prevCoupleRef.current = couple;
   }, [couple, hasRedirected, navigate]);
 
   function setMe(me: User) {
@@ -88,6 +98,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
       // Navigate to create-join page after successfully updating name
       navigate("/create-join");
     } catch (error) {
+      console.error("Error updating name:", error);
       onSaveFailed();
     } finally {
       setLoading(false);

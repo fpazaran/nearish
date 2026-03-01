@@ -1,4 +1,3 @@
-import React from 'react'
 import Background from '../../components/Background'
 import { useUser } from '../../contexts/UserContext'
 import RoundedIconRectangleButton from '../../components/buttons/RoundedIconRectangleButton'

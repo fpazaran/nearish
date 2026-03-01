@@ -3,12 +3,13 @@ import React from 'react'
 interface RedRoundedRectProps {
   children?: React.ReactNode;
   onClick?: () => void;
+  className?: string;
 }
 
-function RedRoundedRect({ children, onClick }: RedRoundedRectProps) {
+function RedRoundedRect({ children, onClick, className = '' }: RedRoundedRectProps) {
   return (
-    <div className="w-full h-12 flex flex-row items-center justify-center bg-[var(--darker_pink)] text-[var(--lightest_pink)] font-medium text-lg 
-                          px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity shadow-xl select-none"
+    <div className={`w-full h-12 flex flex-row items-center justify-center bg-[var(--darker_pink)] text-[var(--lightest_pink)] font-medium text-lg 
+                          px-6 py-2 rounded-2xl justify-center items-center cursor-pointer hover:opacity-80 active:opacity-60 transition-opacity shadow-xl select-none ${className}`}
                           onClick={onClick}>
       {children}
     </div>
