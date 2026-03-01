@@ -8,5 +8,7 @@ boto3
 python-dotenv
 python-dateutil
 pytz
+ruff
 pytest
+httpx
 pytest-asyncio

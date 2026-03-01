@@ -1,11 +1,31 @@
 import { render, screen } from '@testing-library/react';
-import { test, expect } from 'vitest';
-import App from './App';
+import { test, expect, vi } from 'vitest';
 import React from 'react';
 import '@testing-library/jest-dom/vitest';
 
-test('renders the main heading', () => {
+vi.mock('firebase/app', () => ({
+  initializeApp: vi.fn(() => ({})),
+}));
+
+vi.mock('firebase/analytics', () => ({
+  getAnalytics: vi.fn(),
+}));
+
+vi.mock('firebase/auth', () => ({
+  getAuth: vi.fn(() => ({})),
+  GoogleAuthProvider: vi.fn(),
+  onAuthStateChanged: vi.fn((_auth, callback) => {
+    callback(null);
+    return vi.fn();
+  }),
+  signInWithPopup: vi.fn(),
+  signOut: vi.fn(),
+}));
+
+import App from './App';
+
+test('renders the main heading', async () => {
   render(<App />);
-  const linkElement = screen.getByText(/Vite \+ React/i);
-  expect(linkElement).toBeInTheDocument();
+  const heading = await screen.findByText(/nearish/i);
+  expect(heading).toBeInTheDocument();
 });
