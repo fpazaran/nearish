@@ -1,7 +1,7 @@
 from enum import Enum
 from pydantic import BaseModel
 from datetime import date
-from typing import Optional
+
 class VisitState(Enum):
     PLANNED = "planned"
     UNPLANNED = "unplanned"
