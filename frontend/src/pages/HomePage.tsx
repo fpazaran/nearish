@@ -12,10 +12,10 @@ import { currentDay } from '../utils/visits'
 import { useNavigate } from 'react-router-dom'
 
 // components
-import HomeNavBar from '../components/HomeNavBar'
+import HomeNavBar from '../components/home/HomeNavBar'
 import Background from '../components/Background'
 import Loading from './Loading'
-import HomeCard from '../components/HomeCard'
+import HomeCard from '../components/home/HomeCard'
 import RedRoundedRect from '../components/buttons/RedRoundedRect'
 import Timeline from '../components/Timeline'
 

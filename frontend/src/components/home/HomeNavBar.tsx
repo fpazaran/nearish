@@ -1,5 +1,5 @@
 import { useNavigate } from 'react-router-dom'
-import TextButton from './buttons/TextButton'
+import TextButton from '../buttons/TextButton'
 
 function HomeNavBar() {
   const navigate = useNavigate()

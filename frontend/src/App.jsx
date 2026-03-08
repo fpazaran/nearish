@@ -15,6 +15,7 @@ import CreateCodePage from './pages/connect-flow/CreateCodePage';
 import EnterCodePage from './pages/connect-flow/EnterCodePage';
 import ActivitiesPage from './pages/activites-flow/ActivitiesPage';
 import VisitsPage from './pages/visits-flow/VisitsPage';
+import CreateVisitPage from './pages/visits-flow/CreateVisitPage';
 import WishesPage from './pages/WishesPage';
 
 function App() {
@@ -49,6 +50,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <VisitsPage />
+                </ProtectedRoute>
+              } 
+            />
+            <Route 
+              path="/visits/add" 
+              element={
+                <ProtectedRoute>
+                  <CreateVisitPage />
                 </ProtectedRoute>
               } 
             />
