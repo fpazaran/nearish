@@ -27,7 +27,7 @@ function VisitCard({ visit, onClick }: VisitCardProps) {
   return (
     <div
       className="flex flex-col bg-[var(--lightest_pink)] rounded-2xl w-65 h-57 overflow-hidden
-        transition-all duration-300 ease-in-out hover:shadow-2xl hover:scale-102
+        transition-all duration-300 ease-in-out hover:shadow-xl hover:scale-102
         active:scale-95 cursor-pointer select-none"
       onClick={onClick}
     >
