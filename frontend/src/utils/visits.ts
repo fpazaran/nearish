@@ -22,3 +22,9 @@ export function currentDay(start: string): number {
   // Convert the difference to days and return
   return Math.floor(difference_ms / oneDay) + 1;
 }
+
+export function getDaysLength(start: Date, end: Date): number {
+  return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+}
+
+export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
