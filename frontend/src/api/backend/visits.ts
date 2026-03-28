@@ -37,7 +37,7 @@ export async function getVisits(): Promise<Visit[]> {
   return visits;
 }
 
-export async function createVisit(visit: CreateVisitRequest, schedule: CreateActivitySnapshot[]): Promise<Visit> {
+export async function createVisit(visit: CreateVisit, schedule: CreateActivitySnapshot[]): Promise<Visit> {
   const response = await authenticatedFetch("/api/visits", {
     method: "POST",
     body: JSON.stringify({ visit: visit, schedule: schedule }),
