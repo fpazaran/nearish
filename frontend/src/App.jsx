@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProvider from './contexts/UserContext';
 import HomeProvider from './contexts/HomeContext';
+import VisitsProvider from './contexts/VisitsContext';
 
 // Public pages
 import LandingPage from './pages/connect-flow/LandingPage';
@@ -46,21 +47,18 @@ function App() {
               } 
             />
             <Route 
-              path="/visits" 
+              path="/visits"
               element={
                 <ProtectedRoute>
-                  <VisitsPage />
+                  <VisitsProvider>
+                    <Outlet />
+                  </VisitsProvider>
                 </ProtectedRoute>
-              } 
-            />
-            <Route 
-              path="/visits/add" 
-              element={
-                <ProtectedRoute>
-                  <CreateVisitPage />
-                </ProtectedRoute>
-              } 
-            />
+              }
+            >
+              <Route index element={<VisitsPage />} />
+              <Route path="add" element={<CreateVisitPage />} />
+            </Route>
             <Route 
               path="/wishes" 
               element={

@@ -11,6 +11,8 @@ import AlertModal from '../../modals/AlertModal'
 import { CreateActivitySnapshot, createVisit, CreateVisit } from '../../api/backend/visits'
 import { getDaysLength, MILLIS_IN_DAY } from '../../utils/visits'
 import { CATEGORIES } from '../../utils/activities'
+import { useNavigate } from 'react-router-dom'
+import { useVisits } from '../../contexts/VisitsContext'
 
 
 interface ActivityRow {
@@ -26,6 +28,8 @@ function CreateVisitPage() {
   const [dayActivities, setDayActivities] = useState<Record<number, ActivityRow[]>>({})
   const [alertMessage, setAlertMessage] = useState('')
   const [alertOpen, setAlertOpen] = useState(false)
+  const navigate = useNavigate()
+  const { addVisit } = useVisits()
 
   const addActivity = (dayIndex: number) => {
     setDayActivities(prev => ({
@@ -85,7 +89,8 @@ function CreateVisitPage() {
     }
 
     createVisit(request, buildSchedule()).then((visit) => {
-      console.log(visit)
+      addVisit(visit)
+      navigate(-1)
     }).catch((error) => {
       setAlertMessage(error.message)
       setAlertOpen(true)

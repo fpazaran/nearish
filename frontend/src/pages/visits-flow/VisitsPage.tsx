@@ -1,42 +1,19 @@
 import React, { useEffect, useState } from 'react'
 import Background from '../../components/Background'
 import PageNavBar from '../../components/PageNavBar'
-import { Visit } from '../../api/backend/visits'
-import { getVisits } from '../../api/backend/visits';
-import Loading from '../Loading';
+import { getVisits, Visit } from '../../api/backend/visits'
 import VisitCard from '../../components/visits/VisitCard';
-import mockVisits from './mock-visits.json';
-import { FaPlus } from 'react-icons/fa';
 import Selector from '../../components/Selector';
 import { useNavigate } from 'react-router-dom';
-import TextButton from '../../components/buttons/TextButton';
+import { useVisits } from '../../contexts/VisitsContext';
 
 type VisitFilter = 'all' | 'complete' | 'planned'
 
 function VisitsPage() {
-  const [visits, setVisits] = useState<Visit[]>([])
-  const [loading, setLoading] = useState(false)
+  const { visits, setVisits } = useVisits()
   const [filter, setFilter] = useState<VisitFilter>('all')
   const navigate = useNavigate()
-
-  useEffect(() => {
-    const fetchVisits = async () => {
-      setLoading(true)
-      try {
-        const visits = await getVisits()
-        setVisits(visits)
-      } catch (error) {
-        console.error("Error fetching visits:", error)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchVisits()
-  }, [])
-
-  if (loading) {
-    return <Loading />
-  }
+  const [loading, setLoading] = useState(true);
 
   const handleVisitClick = (visit: Visit) => {
     // TODO: navigate to ViewEditVisitPage
@@ -46,6 +23,20 @@ function VisitsPage() {
   const handleAddVisit = () => {
     navigate('/visits/add')
   }
+
+  useEffect(() => {
+    const getVisitsData = async () => {
+      try {
+        const data = await getVisits();
+        setVisits(data);
+      } catch (error) {
+        console.error("Error fetching visits:", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+    getVisitsData();
+  }, [])
 
   const filteredVisits = visits.filter((visit) => {
     if (filter === 'all') return true
@@ -74,15 +65,23 @@ function VisitsPage() {
         </div>
         {/* visits grid */}
         <div className="flex-16 min-h-0 overflow-y-auto no-scrollbar pt-5 px-2">
-          <div className="grid grid-cols-3 gap-x-6 gap-y-6 justify-center items-center min-w-[828px]">
-            {filteredVisits.map((visit) => (
-              <VisitCard key={visit.id} visit={visit} onClick={() => handleVisitClick(visit)}/>
-            ))}
-          </div>
-          {filteredVisits.length === 0 && (
-            <div className="flex-1 flex flex-col items-center justify-center py-20 text-md font-medium text-[var(--medium_pink)]">
-              No visits found
+          {loading ? (
+            <div className="flex flex-col items-center justify-center text-md font-medium text-[var(--medium_pink)] min-w-[828px] h-full">
+              Loading visits...
             </div>
+          ) : (
+            <>
+              <div className="grid grid-cols-3 gap-x-6 gap-y-6 justify-center items-center min-w-[828px]">
+                {filteredVisits.map((visit) => (
+                  <VisitCard key={visit.id} visit={visit} onClick={() => handleVisitClick(visit)}/>
+                ))}
+              </div>
+              {filteredVisits.length === 0 && (
+                <div className="flex-1 flex flex-col items-center justify-center py-20 text-md font-medium text-[var(--medium_pink)]">
+                  No visits found
+                </div>
+              )}
+            </>
           )}
         </div>
       </div>
