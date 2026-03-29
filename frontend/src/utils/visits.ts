@@ -27,4 +27,12 @@ export function getDaysLength(start: Date, end: Date): number {
   return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
 }
 
+export function formatDateRange(startStr: string, endStr: string): string {
+  const start = new Date(startStr + 'T00:00:00')
+  const end = new Date(endStr + 'T00:00:00')
+  const startPart = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const endPart = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return `${startPart} - ${endPart}`
+}
+
 export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;

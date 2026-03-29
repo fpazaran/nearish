@@ -1,6 +1,6 @@
 import React from 'react'
 import { Visit } from '../../api/backend/visits'
-import { FaRegCalendarAlt } from 'react-icons/fa'
+import { formatDateRange } from '../../utils/visits'
 
 interface VisitCardProps {
   visit: Visit;
@@ -8,13 +8,6 @@ interface VisitCardProps {
 }
 
 function VisitCard({ visit, onClick }: VisitCardProps) {
-  const formatDateRange = (startStr: string, endStr: string) => {
-    const start = new Date(startStr + 'T00:00:00')
-    const end = new Date(endStr + 'T00:00:00')
-    const startPart = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-    const endPart = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
-    return `${startPart} - ${endPart}`
-  }
 
   const getStatus = () => {
     const now = new Date()
