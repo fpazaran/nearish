@@ -30,6 +30,7 @@ function CreateVisitPage() {
   const [alertOpen, setAlertOpen] = useState(false)
   const navigate = useNavigate()
   const { addVisit } = useVisits()
+  const [loadingRequest, setLoadingRequest] = useState(false)
 
   const addActivity = (dayIndex: number) => {
     setDayActivities(prev => ({
@@ -82,6 +83,7 @@ function CreateVisitPage() {
       return;
     }
 
+    setLoadingRequest(true)
     const request: CreateVisit = {
       description: description,
       start: startDate.toISOString().split('T')[0],
@@ -94,6 +96,8 @@ function CreateVisitPage() {
     }).catch((error) => {
       setAlertMessage(error.message)
       setAlertOpen(true)
+    }).finally(() => {
+      setLoadingRequest(false)
     })
   }
 
@@ -111,7 +115,7 @@ function CreateVisitPage() {
             Plan our next visit!
           </h1>
           <button className="text-md font-semibold text-[var(--bg_pink)] flex flex-row items-center gap-2 cursor-pointer bg-[var(--darker_pink)] rounded-xl px-4 py-2" 
-            type="submit" form="create-visit-form">
+            type="submit" form="create-visit-form" disabled={loadingRequest}>
               <FiSave className="w-6 h-6 flex-shrink-0" /> Save Visit
           </button>
         </div>
