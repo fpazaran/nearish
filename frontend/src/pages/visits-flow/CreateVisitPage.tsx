@@ -58,7 +58,8 @@ function CreateVisitPage() {
       activities.forEach((a, order) => {
         if (a.name.trim()) {
           snapshots.push({
-            date: date.toISOString(),
+            activity_id: null,
+            date: date.toISOString().split('T')[0],
             name: a.name,
             category: a.category,
             order_index: order,
@@ -79,8 +80,8 @@ function CreateVisitPage() {
 
     const request: CreateVisit = {
       description: description,
-      start: startDate.toISOString(),
-      end: endDate.toISOString(),
+      start: startDate.toISOString().split('T')[0],
+      end: endDate.toISOString().split('T')[0],
     }
 
     createVisit(request, buildSchedule()).then((visit) => {
@@ -119,7 +120,7 @@ function CreateVisitPage() {
             className="w-full rounded-xl px-4 py-2 bg-[var(--dark-medium-pink)]
             outline-none transition-shadow text-md font-bold text-[var(--darker_pink)]
             min-h-12"
-            placeholder="e.g. Sushi Night"
+            placeholder="e.g. Trip to Japan"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />

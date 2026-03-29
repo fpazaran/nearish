@@ -1,17 +1,11 @@
 from enum import Enum
 from pydantic import BaseModel
-from datetime import date
+from models.visits import Visit
 
 class VisitState(Enum):
     PLANNED = "planned"
     UNPLANNED = "unplanned"
     ACTIVE = "active"
-
-class Visit(BaseModel):
-    id: int
-    start: date
-    end: date
-    description: str
 
 class HomeResponse(BaseModel):
     state: VisitState

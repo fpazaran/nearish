@@ -14,7 +14,8 @@ export interface CreateVisit {
 }
 
 export interface CreateActivitySnapshot {
-	date: string
+  activity_id: number | null;
+  date: string
   name: string
   category: string
   order_index: number
@@ -27,7 +28,7 @@ export enum VisitState {
 }
 
 export async function getVisits(): Promise<Visit[]> {
-  const response = await authenticatedFetch("/api/visits", {
+  const response = await authenticatedFetch("/visits", {
     method: "GET",
   });
   if (!response.ok) {
@@ -38,7 +39,7 @@ export async function getVisits(): Promise<Visit[]> {
 }
 
 export async function createVisit(visit: CreateVisit, schedule: CreateActivitySnapshot[]): Promise<Visit> {
-  const response = await authenticatedFetch("/api/visits", {
+  const response = await authenticatedFetch("/visits", {
     method: "POST",
     body: JSON.stringify({ visit: visit, schedule: schedule }),
   });
