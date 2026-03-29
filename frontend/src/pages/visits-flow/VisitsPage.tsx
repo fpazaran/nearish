@@ -1,23 +1,27 @@
 import React, { useEffect, useState } from 'react'
 import Background from '../../components/Background'
 import PageNavBar from '../../components/PageNavBar'
-import { getVisits, Visit } from '../../api/backend/visits'
+import { getVisits, Visit, VisitState } from '../../api/backend/visits'
 import VisitCard from '../../components/visits/VisitCard';
 import Selector from '../../components/Selector';
 import { useNavigate } from 'react-router-dom';
 import { useVisits } from '../../contexts/VisitsContext';
 
-type VisitFilter = 'all' | 'complete' | 'planned'
+enum VisitFilter {
+  ALL = 'all',
+  PLANNED = VisitState.PLANNED,
+  ACTIVE = VisitState.ACTIVE,
+  COMPLETED = VisitState.COMPLETED,
+}
 
 function VisitsPage() {
   const { visits, setVisits } = useVisits()
-  const [filter, setFilter] = useState<VisitFilter>('all')
+  const [filter, setFilter] = useState<VisitFilter>(VisitFilter.ALL)
   const navigate = useNavigate()
   const [loading, setLoading] = useState(true);
 
   const handleVisitClick = (visit: Visit) => {
-    // TODO: navigate to ViewEditVisitPage
-    console.log(visit)
+    navigate(`/visits/${visit.id}`)
   }
 
   const handleAddVisit = () => {
@@ -44,13 +48,15 @@ function VisitsPage() {
   }, [])
 
   const filteredVisits = visits.filter((visit) => {
-    if (filter === 'all') return true
+    if (filter === VisitFilter.ALL) return true
     const now = new Date()
     const end = new Date(visit.end + 'T00:00:00')
-    if (filter === 'complete') return end < now
-    return end >= now
+    const start = new Date(visit.start + 'T00:00:00')
+    if (filter === VisitFilter.ACTIVE) return start <= now && end >= now
+    if (filter === VisitFilter.PLANNED) return start > now
+    if (filter === VisitFilter.COMPLETED) return end < now
   })
-
+  
   return (
     <Background>
       <PageNavBar />
@@ -58,11 +64,12 @@ function VisitsPage() {
         {/* top section */}
         <div className="flex-1 flex flex-row items-center justify-between px-2">
           <div className="w-fit">
-          <Selector options={[{ label: 'All', value: 'all' }, 
-            { label: 'Complete', value: 'complete' }, 
-            { label: 'Planned', value: 'planned' }]} 
-            defaultValue='all'
-            onChange={setFilter} />
+          <Selector options={[{ label: 'All', value: VisitFilter.ALL }, 
+            { label: 'Complete', value: VisitFilter.COMPLETED }, 
+            { label: 'Planned', value: VisitFilter.PLANNED }, 
+            { label: 'Active', value: VisitFilter.ACTIVE }]} 
+            defaultValue={VisitFilter.ALL}
+            onChange={(value) => setFilter(value as VisitFilter)} />
           </div>
           <div className="text-md font-medium text-[var(--lightest_pink)] cursor-pointer rounded-full px-6 py-1 bg-[var(--darker_pink)]" onClick={handleAddVisit}>
             + Add Visit
