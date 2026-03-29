@@ -35,7 +35,12 @@ function VisitsPage() {
         setLoading(false);
       }
     }
-    getVisitsData();
+    
+    if (visits.length === 0) {
+      getVisitsData();
+    } else {
+      setLoading(false);
+    }
   }, [])
 
   const filteredVisits = visits.filter((visit) => {
