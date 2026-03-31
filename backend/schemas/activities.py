@@ -15,8 +15,8 @@ class ActivitySnapshot(Base):
     __tablename__ = "activity_snapshots"
     
     id = Column(Integer, nullable=False, unique=True, primary_key=True)
-    visit_id = Column(Integer, ForeignKey("visits.id"), nullable=False)
-    activity_id = Column(Integer, ForeignKey("activities.id"), nullable=True)
+    visit_id = Column(Integer, ForeignKey("visits.id", ondelete="CASCADE"), nullable=False)
+    activity_id = Column(Integer, ForeignKey("activities.id", ondelete="SET NULL"), nullable=True)
     date = Column(Date, nullable=False)
     name = Column(String, nullable=False)
     category = Column(String, nullable=False)
