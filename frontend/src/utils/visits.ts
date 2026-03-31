@@ -55,7 +55,7 @@ export function getVisitStatus(visit: Visit): string {
 
 export function getDaysAway(visit: Visit): number {
   const now = new Date();
-  return Math.ceil((new Date(visit.start).getTime() - now.getTime()) / MILLIS_IN_DAY);
+  return Math.ceil((new Date(visit.start).getTime() - now.getTime()) / MILLIS_IN_DAY) + 1;
 }
 
 export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;

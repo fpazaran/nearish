@@ -19,7 +19,7 @@ import DeleteItemModal from '../../modals/DeleteItemModal'
 import { deleteVisit } from '../../api/backend/visits'
 
 function ViewEditVisitPage() {
-  const { visits } = useVisits();
+  const { visits, setVisits } = useVisits();
   const { id } = useParams();
   const navigate = useNavigate();
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
@@ -52,6 +52,7 @@ function ViewEditVisitPage() {
 
   const handleDeleteVisit = () => {
     deleteVisit(visit.id).then(() => {
+      setVisits(visits.filter((v) => v.id !== visit.id));
       navigate('/visits');
     }).catch((error) => {
       console.error('Error deleting visit:', error);
