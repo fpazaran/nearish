@@ -37,3 +37,20 @@ def create_visit(visit: CreateVisit, schedule: list[CreateActivitySnapshot], uid
   except Exception as e:
     db.rollback()
     raise Exception(f"Database error: {str(e)}")
+
+def delete_visit(id: int, uid: str, db: Session) -> Visit:
+  try:
+    couple = db.execute(select(Couple).where(or_(Couple.partner1_uid == uid, Couple.partner2_uid == uid))).scalar_one_or_none()
+    if couple is None:
+      return None
+    
+    visit = db.execute(select(Visit).where(Visit.id == id, Visit.couple_id == couple.id)).scalar_one_or_none()
+    if visit is None:
+      return None
+    
+    db.delete(visit)
+    db.commit()
+    return VisitModel(id=visit.id, start=visit.start, end=visit.end, description=visit.description)
+  except Exception as e:
+    db.rollback()
+    raise Exception(f"Database error: {str(e)}")

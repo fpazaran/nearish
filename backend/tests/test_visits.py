@@ -1,4 +1,4 @@
-from services.visits import get_visits, create_visit
+from services.visits import get_visits, create_visit, delete_visit
 from schemas.user import User, Couple
 from schemas.visits import Visit
 from schemas.activities import ActivitySnapshot
@@ -107,3 +107,39 @@ def test_create_visit_no_couple(db):
         assert False, "Expected an exception"
     except Exception as e:
         assert "Couple not found" in str(e)
+
+def test_delete_visit_no_couple(db):
+    """Case 8: Deleting a visit without a couple should return None."""
+    uid1, uid2 = "delete-v-1", "delete-v-2"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=205)
+
+    visit_data = CreateVisit(description="Delete trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
+
+    visit = delete_visit(id=1, uid=uid2, db=db)
+    assert visit is None
+
+def test_delete_visit_no_visit(db):
+    """Case 9: Deleting a visit that doesn't exist should return None."""
+    uid1, uid2 = "delete-v-3", "delete-v-4"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=206)
+
+    visit_data = CreateVisit(description="Delete trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
+
+    visit = delete_visit(id=1, uid=uid2, db=db)
+    assert visit is None
+
+def test_delete_visit_success(db):
+    """Case 10: Deleting a visit should delete the visit and all associated activity snapshots."""
+    uid1, uid2 = "delete-v-5", "delete-v-6"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=207)
+
+    visit_data = CreateVisit(description="Delete trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
+
+    visit = delete_visit(id=1, uid=uid2, db=db)
+    assert visit is not None
+    assert visit.id == 1
+    assert visit.description == "Delete trip"
+    assert visit.start == date(2026, 9, 1)

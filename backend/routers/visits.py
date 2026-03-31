@@ -25,3 +25,13 @@ async def create_visit(body: CreateVisitRequest, uid: str = Depends(get_current_
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
     return visit
+
+@router.delete("/visits/{id}", response_model=Visit)
+async def delete_visit(id: int, uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
+    try:
+        visit = visits_service.delete_visit(id, uid, db)
+        if visit is None:
+            raise HTTPException(status_code=404, detail="Unable to delete visit")
+        return visit
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
