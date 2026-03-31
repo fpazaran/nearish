@@ -23,7 +23,7 @@ export interface CreateActivitySnapshot {
 
 export enum VisitState {
   PLANNED = "planned",
-  UNPLANNED = "unplanned",
+  COMPLETED = "completed",
   ACTIVE = "active",
 }
 
@@ -48,4 +48,13 @@ export async function createVisit(visit: CreateVisit, schedule: CreateActivitySn
   }
   const createdVisit: Visit = await response.json();
   return createdVisit;
+}
+
+export async function deleteVisit(id: number): Promise<void> {
+  const response = await authenticatedFetch(`/visits/${id}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to delete visit");
+  }
 }

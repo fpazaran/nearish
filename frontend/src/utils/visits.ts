@@ -1,3 +1,5 @@
+import { Visit } from "../api/backend/visits";
+
 /**
  * 
  * @param start start date of the visit (Date object or ISO string)
@@ -33,6 +35,27 @@ export function formatDateRange(startStr: string, endStr: string): string {
   const startPart = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   const endPart = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   return `${startPart} - ${endPart}`
+}
+
+/**
+ * 
+ * @param visit visit to get the status of
+ * @returns the status of the visit (Active, Planned, Completed)
+ */
+export function getVisitStatus(visit: Visit): string {
+  const now = new Date();
+  if (new Date(visit.end) < now) {
+    return 'Completed';
+  } else if (new Date(visit.start) > now) {
+    return 'Planned';
+  } else {
+    return 'Active';
+  }
+}
+
+export function getDaysAway(visit: Visit): number {
+  const now = new Date();
+  return Math.ceil((new Date(visit.start).getTime() - now.getTime()) / MILLIS_IN_DAY);
 }
 
 export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
