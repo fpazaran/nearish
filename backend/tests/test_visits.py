@@ -1,6 +1,7 @@
-from services.visits import get_visits, create_visit, delete_visit, get_visit_schedule
+from services.visits import get_visits, create_visit, delete_visit, get_visit_schedule, save_visit_schedule
 from schemas.user import User, Couple
 from schemas.visits import Visit
+from schemas.activities import ActivitySnapshot as ActivitySnapshotSchema
 from schemas.activities import ActivitySnapshot
 from models.visits import CreateVisit
 from models.activities import CreateActivitySnapshot
@@ -169,3 +170,27 @@ def test_get_visit_schedule_success_with_schedule(db):
     schedule = get_visit_schedule(id=visit.id, uid=uid2, db=db)
     assert schedule is not None
     assert len(schedule) == 2
+
+def test_save_visit_schedule_success(db):
+    """Case 14: Saving a visit schedule should save the schedule."""
+    uid1, uid2 = "save-v-1", "save-v-2"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=211)
+    visit_data = CreateVisit(description="Save trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    visit = create_visit(visit=visit_data, schedule=[
+        CreateActivitySnapshot(activity_id=None, date=date(2026, 9, 1), name="Breakfast", category="Food", order_index=0),
+    ], uid=uid1, db=db)
+    to_add = [
+        CreateActivitySnapshot(activity_id=None, date=date(2026, 9, 1), name="Hiking", category="Outdoors", order_index=0),
+    ]
+    activity_snapshot = db.execute(select(ActivitySnapshot).where(ActivitySnapshot.visit_id == visit.id)).scalar_one()
+    to_delete = [activity_snapshot.id]
+    visit_id = save_visit_schedule(id=visit.id, to_add=to_add, to_delete=to_delete, uid=uid2, db=db)
+    assert visit_id is not None
+    assert visit_id == visit.id
+    schedule = get_visit_schedule(id=visit_id, uid=uid2, db=db)
+    assert schedule is not None
+    assert len(schedule) == 1
+    assert schedule[0].name == "Hiking"
+    assert schedule[0].date == date(2026, 9, 1)
+    assert schedule[0].category == "Outdoors"
+    assert schedule[0].order_index == 0

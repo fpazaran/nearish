@@ -1,6 +1,6 @@
 from models.home import HomeResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, select, and_
+from sqlalchemy import or_, select, and_, insert, delete
 from schemas.visits import Visit
 from schemas.user import Couple
 from models.visits import CreateVisit, Visit as VisitModel
@@ -64,4 +64,46 @@ def get_visit_schedule(id: int, uid: str, db: Session) -> list[ActivitySnapshot]
     ).scalars().all()
     return schedule
   except Exception as e:
+    raise Exception(f"Database error: {str(e)}")
+
+def save_visit_schedule(id: int, to_add: list[CreateActivitySnapshot], to_delete: list[int], uid: str, db: Session) -> int:
+  try:
+    visit_id = db.scalar(
+      select(Visit.id)
+      .join(Couple)
+      .where(and_(
+        Visit.id == id,
+        or_(Couple.partner1_uid == uid, Couple.partner2_uid == uid)
+      ))
+    )
+
+    if not visit_id:
+      raise ValueError("Visit not found")
+
+    if to_add:
+      db.execute(insert(ActivitySnapshot).values([
+          {
+              "visit_id": visit_id,
+              "activity_id": a.activity_id,
+              "date": a.date,
+              "name": a.name,
+              "category": a.category,
+              "order_index": a.order_index
+          }
+          for a in to_add
+      ]))
+
+    if to_delete:
+      db.execute(
+        delete(ActivitySnapshot)
+        .where(and_(
+          ActivitySnapshot.visit_id == visit_id,
+          ActivitySnapshot.id.in_(to_delete)
+        ))
+      )
+
+    db.commit()
+    return visit_id
+  except Exception as e:
+    db.rollback()
     raise Exception(f"Database error: {str(e)}")

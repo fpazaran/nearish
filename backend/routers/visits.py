@@ -47,12 +47,12 @@ async def get_visit_schedule(id: int, uid: str = Depends(get_current_firebase_ui
         raise HTTPException(status_code=500, detail=str(e))
     return schedule
 
-@router.patch("/visits/{id}/schedule", response_model=Visit)
+@router.patch("/visits/{id}/schedule", response_model=int)
 async def save_visit_schedule(id: int, body: SaveVisitScheduleRequest, uid: str = Depends(get_current_firebase_uid), db: Session = Depends(get_db)):
     try:
-        visit = visits_service.save_visit_schedule(id, body.add, body.delete, uid, db)
-        if visit is None:
+        visit_id = visits_service.save_visit_schedule(id, body.add, body.delete, uid, db)
+        if visit_id is None:
             raise HTTPException(status_code=404, detail="Unable to save visit schedule")
-        return visit
+        return visit_id
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

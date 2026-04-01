@@ -52,7 +52,7 @@ export async function deleteVisit(id: number): Promise<void> {
   }
 }
 
-export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], toDelete: ActivitySnapshot[]): Promise<void> {
+export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], toDelete: ActivitySnapshot[]): Promise<number> {
   const response = await authenticatedFetch(`/visits/${id}/schedule`, {
     method: "PATCH",
     body: JSON.stringify({ add: toAdd, delete: toDelete }),
@@ -60,6 +60,8 @@ export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], 
   if (!response.ok) {
     throw new Error("Failed to save schedule");
   }
+  const visitId: number = await response.json();
+  return visitId;
 }
 
 export async function getVisitSchedule(id: number): Promise<ActivitySnapshot[]> {

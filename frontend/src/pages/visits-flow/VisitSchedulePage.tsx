@@ -82,7 +82,7 @@ function VisitSchedulePage() {
     e.preventDefault();
     setSubmitDisabled(true);
     const toAdd = schedule.filter(a => !('id' in a));
-    saveSchedule(visit.id, toAdd, toDelete).then(() => {
+    saveSchedule(visit.id, toAdd, toDelete.map(a => a.id)).then(() => {
       console.log("schedule saved");
     }).catch((error) => {
       console.error("error saving schedule:", error);
