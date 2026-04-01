@@ -52,7 +52,7 @@ export async function deleteVisit(id: number): Promise<void> {
   }
 }
 
-export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], toDelete: ActivitySnapshot[]): Promise<number> {
+export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], toDelete: number[]): Promise<number> {
   const response = await authenticatedFetch(`/visits/${id}/schedule`, {
     method: "PATCH",
     body: JSON.stringify({ add: toAdd, delete: toDelete }),
