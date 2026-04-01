@@ -1,6 +1,6 @@
 from models.home import HomeResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import or_, select
+from sqlalchemy import or_, select, and_
 from schemas.visits import Visit
 from schemas.user import Couple
 from models.visits import CreateVisit, Visit as VisitModel
@@ -53,4 +53,15 @@ def delete_visit(id: int, uid: str, db: Session) -> Visit:
     return VisitModel(id=visit.id, start=visit.start, end=visit.end, description=visit.description)
   except Exception as e:
     db.rollback()
+    raise Exception(f"Database error: {str(e)}")
+
+def get_visit_schedule(id: int, uid: str, db: Session) -> list[ActivitySnapshot] | None:
+  try:
+    schedule = db.execute(select(ActivitySnapshot)
+    .join(Visit)
+    .join(Couple)
+    .where(and_(Visit.id == id, ActivitySnapshot.visit_id == id, or_(Couple.partner1_uid == uid, Couple.partner2_uid == uid)))
+    ).scalars().all()
+    return schedule
+  except Exception as e:
     raise Exception(f"Database error: {str(e)}")

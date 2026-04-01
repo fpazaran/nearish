@@ -16,3 +16,7 @@ class CreateVisit(BaseModel):
 class CreateVisitRequest(BaseModel):
     visit: CreateVisit
     schedule: list[CreateActivitySnapshot] = []
+
+class SaveVisitScheduleRequest(BaseModel):
+    add: list[CreateActivitySnapshot]
+    delete: list[int]

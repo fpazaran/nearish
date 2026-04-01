@@ -1,4 +1,4 @@
-from services.visits import get_visits, create_visit, delete_visit
+from services.visits import get_visits, create_visit, delete_visit, get_visit_schedule
 from schemas.user import User, Couple
 from schemas.visits import Visit
 from schemas.activities import ActivitySnapshot
@@ -136,10 +136,36 @@ def test_delete_visit_success(db):
     couple_id = setup_couple(db, uid1, uid2, couple_id=207)
 
     visit_data = CreateVisit(description="Delete trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
-    create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
-
-    visit = delete_visit(id=1, uid=uid2, db=db)
+    visit = create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
+    id = visit.id
+    visit = delete_visit(id=id, uid=uid2, db=db)
     assert visit is not None
-    assert visit.id == 1
+    assert visit.id == id
     assert visit.description == "Delete trip"
     assert visit.start == date(2026, 9, 1)
+
+def test_get_visit_schedule_success(db):
+    """Case 12: Getting a visit schedule should return the schedule."""
+    uid1, uid2 = "schedule-v-3", "schedule-v-4"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=209)
+
+    visit_data = CreateVisit(description="Schedule trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    visit = create_visit(visit=visit_data, schedule=[], uid=uid1, db=db)
+
+    schedule = get_visit_schedule(id=visit.id, uid=uid2, db=db)
+    assert schedule is not None
+    assert len(schedule) == 0
+
+def test_get_visit_schedule_success_with_schedule(db):
+    """Case 13: Getting a visit schedule with a schedule should return the schedule."""
+    uid1, uid2 = "schedule-v-5", "schedule-v-6"
+    couple_id = setup_couple(db, uid1, uid2, couple_id=210)
+    visit_data = CreateVisit(description="Schedule trip", start=date(2026, 9, 1), end=date(2026, 9, 3))
+    schedule = [
+        CreateActivitySnapshot(activity_id=None, date=date(2026, 9, 1), name="Hiking", category="Outdoors", order_index=0),
+        CreateActivitySnapshot(activity_id=None, date=date(2026, 9, 2), name="Dinner", category="Food", order_index=0),
+    ]
+    visit = create_visit(visit=visit_data, schedule=schedule, uid=uid1, db=db)
+    schedule = get_visit_schedule(id=visit.id, uid=uid2, db=db)
+    assert schedule is not None
+    assert len(schedule) == 2
