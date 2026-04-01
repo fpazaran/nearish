@@ -61,3 +61,14 @@ export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], 
     throw new Error("Failed to save schedule");
   }
 }
+
+export async function getVisitSchedule(id: number): Promise<ActivitySnapshot[]> {
+  const response = await authenticatedFetch(`/visits/${id}/schedule`, {
+    method: "GET",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to get visit schedule");
+  }
+  const schedule: ActivitySnapshot[] = await response.json();
+  return schedule;
+}

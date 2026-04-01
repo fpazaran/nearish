@@ -18,7 +18,7 @@ import { ActivitySnapshot, CreateActivitySnapshot, getActivitySnapshots } from '
 import mockActivities from './mock-activities.json';
 import { FiSave, FiTrash } from 'react-icons/fi';
 import VisitAddActivityModal from '../../modals/VisitAddActivityModal';
-import { saveSchedule } from '../../api/backend/visits';
+import { getVisitSchedule, saveSchedule } from '../../api/backend/visits';
 
 function VisitSchedulePage() {
   const { visits } = useVisits();
@@ -36,7 +36,7 @@ function VisitSchedulePage() {
 
   useEffect(() => {
     if (visit) {
-      getActivitySnapshots(visit.id).then((snapshots) => {
+      getVisitSchedule(visit.id).then((snapshots) => {
         setSchedule(snapshots);
       }).then(() => {
         setLoading(false);
