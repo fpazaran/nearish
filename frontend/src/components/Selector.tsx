@@ -9,9 +9,11 @@ interface SelectorProps<T extends string> {
   options: SelectorOption<T>[];
   defaultValue?: T;
   onChange: (value: T) => void;
+  className?: string;
+  textStyle?: string;
 }
 
-function Selector<T extends string>({ options, defaultValue, onChange }: SelectorProps<T>) {
+function Selector<T extends string>({ options, defaultValue, onChange, className, textStyle }: SelectorProps<T>) {
   const [selected, setSelected] = useState<T>(defaultValue ?? options[0].value)
 
   const handleSelect = (value: T) => {
@@ -20,7 +22,7 @@ function Selector<T extends string>({ options, defaultValue, onChange }: Selecto
   }
 
   return (
-    <div className="flex flex-row bg-[var(--darker_pink)] rounded-full p-1.5 gap-1">
+    <div className={`flex flex-row bg-[var(--darker_pink)] rounded-full p-1.5 gap-1 ${className}`}>
       {options.map((option) => (
         <button
           key={option.value}
@@ -29,7 +31,7 @@ function Selector<T extends string>({ options, defaultValue, onChange }: Selecto
             ${selected === option.value
               ? 'bg-[var(--lightest_pink)] text-[var(--darker_pink)] '
               : 'bg-transparent text-white hover:text-white/80'
-            }`}
+            } ${textStyle}`}
         >
           {option.label}
         </button>

@@ -19,6 +19,7 @@ import VisitsPage from './pages/visits-flow/VisitsPage';
 import CreateVisitPage from './pages/visits-flow/CreateVisitPage';
 import WishesPage from './pages/WishesPage';
 import ViewEditVisitPage from './pages/visits-flow/ViewEditVisitPage';
+import VisitSchedulePage from './pages/visits-flow/VisitSchedulePage';
 
 function App() {
   return (
@@ -60,6 +61,7 @@ function App() {
               <Route index element={<VisitsPage />} />
               <Route path="add" element={<CreateVisitPage />} />
               <Route path=":id" element={<ViewEditVisitPage />} />
+              <Route path=":id/schedule" element={<VisitSchedulePage />} />
             </Route>
             <Route 
               path="/wishes" 

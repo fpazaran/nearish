@@ -1,4 +1,5 @@
 import { authenticatedFetch } from "./apiClient";
+import { ActivitySnapshot, CreateActivitySnapshot } from "./activities";
 
 export interface Visit {
   id: number;
@@ -11,14 +12,6 @@ export interface CreateVisit {
   description: string;
   start: string;
   end: string;
-}
-
-export interface CreateActivitySnapshot {
-  activity_id: number | null;
-  date: string
-  name: string
-  category: string
-  order_index: number
 }
 
 export enum VisitState {
@@ -56,5 +49,15 @@ export async function deleteVisit(id: number): Promise<void> {
   });
   if (!response.ok) {
     throw new Error("Failed to delete visit");
+  }
+}
+
+export async function saveSchedule(id: number, toAdd: CreateActivitySnapshot[], toDelete: ActivitySnapshot[]): Promise<void> {
+  const response = await authenticatedFetch(`/visits/${id}/schedule`, {
+    method: "PATCH",
+    body: JSON.stringify({ add: toAdd, delete: toDelete }),
+  });
+  if (!response.ok) {
+    throw new Error("Failed to save schedule");
   }
 }

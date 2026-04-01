@@ -58,4 +58,22 @@ export function getDaysAway(visit: Visit): number {
   return Math.ceil((new Date(visit.start).getTime() - now.getTime()) / MILLIS_IN_DAY) + 1;
 }
 
+/**
+ * 
+ * @param start start date of the visit
+ * @param index index of the day
+ * @returns the formatted date of the day
+ */
+export function formatDayDate(start: Date, dayIndex: number): string {
+  const date = new Date(start.getTime() + dayIndex * MILLIS_IN_DAY);
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const day = date.getDate();
+  return `${weekday}, ${month} ${day}`;
+}
+
+export function dayNumberFromIndex(index: number): number {
+  return index + 1;
+}
+
 export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;
