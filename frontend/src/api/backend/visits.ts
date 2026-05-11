@@ -16,6 +16,7 @@ export interface CreateVisit {
 
 export enum VisitState {
   PLANNED = "planned",
+  UNPLANNED = "unplanned",
   COMPLETED = "completed",
   ACTIVE = "active",
 }
