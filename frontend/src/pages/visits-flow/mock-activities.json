@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "visit_id": 1,
+    "activity_id": 1,
+    "date": "2026-04-17",
+    "name": "Go on a hike",
+    "category": "Outdoor",
+    "order_index": 0
+  },
+  {
+    "id": 2,
+    "visit_id": 1,
+    "activity_id": 1,
+    "date": "2026-04-17",
+    "name": "Go to the beach",
+    "category": "Outdoor",
+    "order_index": 1
+  }
+]

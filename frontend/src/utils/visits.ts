@@ -1,3 +1,5 @@
+import { Visit } from "../api/backend/visits";
+
 /**
  * 
  * @param start start date of the visit (Date object or ISO string)
@@ -22,3 +24,56 @@ export function currentDay(start: string): number {
   // Convert the difference to days and return
   return Math.floor(difference_ms / oneDay) + 1;
 }
+
+export function getDaysLength(start: Date, end: Date): number {
+  return Math.ceil((end.getTime() - start.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+}
+
+export function formatDateRange(startStr: string, endStr: string): string {
+  const start = new Date(startStr + 'T00:00:00')
+  const end = new Date(endStr + 'T00:00:00')
+  const startPart = start.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  const endPart = end.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+  return `${startPart} - ${endPart}`
+}
+
+/**
+ * 
+ * @param visit visit to get the status of
+ * @returns the status of the visit (Active, Planned, Completed)
+ */
+export function getVisitStatus(visit: Visit): string {
+  const now = new Date();
+  if (new Date(visit.end) < now) {
+    return 'Completed';
+  } else if (new Date(visit.start) > now) {
+    return 'Planned';
+  } else {
+    return 'Active';
+  }
+}
+
+export function getDaysAway(visit: Visit): number {
+  const now = new Date();
+  return Math.ceil((new Date(visit.start).getTime() - now.getTime()) / MILLIS_IN_DAY) + 1;
+}
+
+/**
+ * 
+ * @param start start date of the visit
+ * @param index index of the day
+ * @returns the formatted date of the day
+ */
+export function formatDayDate(start: Date, dayIndex: number): string {
+  const date = new Date(start.getTime() + dayIndex * MILLIS_IN_DAY);
+  const weekday = date.toLocaleDateString('en-US', { weekday: 'long' });
+  const month = date.toLocaleDateString('en-US', { month: 'long' });
+  const day = date.getDate();
+  return `${weekday}, ${month} ${day}`;
+}
+
+export function dayNumberFromIndex(index: number): number {
+  return index + 1;
+}
+
+export const MILLIS_IN_DAY = 1000 * 60 * 60 * 24;

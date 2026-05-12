@@ -1,0 +1,1 @@
+export const CATEGORIES = ['Outdoors', 'Food', 'Entertainment', 'Shopping', 'Travel', 'Other']

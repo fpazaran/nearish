@@ -1,7 +1,7 @@
 import { Couple, Invite, User } from "../types/user.ts";
 import { createContext, useContext, useState, useEffect, useRef } from "react";
 import { getMe, updateName as updateNameApi } from "../api/backend/auth.ts";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "./AuthContext";
 
 type UserContext = {
@@ -29,6 +29,7 @@ export default function UserProvider({ children }: { children: React.ReactNode }
 
   const { currentUser, loading: authLoading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
   // 1. Fetch user profile from backend when Firebase user is available
   useEffect(() => {
@@ -51,11 +52,14 @@ export default function UserProvider({ children }: { children: React.ReactNode }
   }, [currentUser, authLoading]);
 
   // 2. Handle redirection based on couple status (only once on initial load)
+  const authPages = ["/", "/enter-name", "/create-join", "/create-code", "/enter-code"];
   useEffect(() => {
-    // Only redirect if we are finished loading and have a user and haven't redirected yet
     if (!loading && uid && !hasRedirected) {
       if (couple && couple.partner) {
-        navigate("/home");
+        const onAuthPage = authPages.includes(location.pathname);
+        if (onAuthPage) {
+          navigate("/home");
+        }
       } else {
         if (name === "") {
           navigate("/enter-name");

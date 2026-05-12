@@ -4,7 +4,29 @@
 
 It gives couples a space to plan visits, count down to seeing each other, organize daily activities, save memories with photos or videos, and keep shared wishlists.
 
-This project is currently under active development. See [setup.md](setup.md) for app setup instructions
+This project is currently under active development.
+
+## Setup
+
+See backend/.env.example and frontend/.env.example templates and fill in real **`.env`**:
+
+### Development
+
+```bash
+docker compose -f compose.dev.yaml up --build -d
+docker compose -f compose.dev.yaml exec backend python init_db.py
+```
+
+App: **http://localhost:3000** · API: **http://localhost:8000**
+
+### Production Compose (project `nearish-prod`)
+
+```bash
+docker compose -f compose.prod.yaml --env-file frontend/.env -p nearish-prod up --build -d
+docker compose -f compose.prod.yaml --env-file frontend/.env -p nearish-prod exec backend python init_db.py
+```
+
+Same URLs by default (**3000** / **8000**). Don’t run dev and prod stacks together unless you remap ports.
 
 ---
 
@@ -76,5 +98,5 @@ The backend exposes REST endpoints for:
 - Memories & media uploads
 - Wishlists
 
-Authentication is handled via **Firebase ID tokens**:
+Authentication is handled via **Firebase ID tokens**, sent on API requests using the **`Authorization`** header with the **`Bearer`** scheme (the raw Firebase ID token as the bearer value).
 

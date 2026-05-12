@@ -8,6 +8,11 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: {
     port: 3000,
+    host: true,
+    watch: {
+      // Docker Desktop (Windows/Mac) bind mounts often miss FS events without polling.
+      usePolling: true,
+    },
   },
   test: {
     globals: true,

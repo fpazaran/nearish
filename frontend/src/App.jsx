@@ -1,8 +1,9 @@
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom';
 import AuthProvider from './contexts/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import UserProvider from './contexts/UserContext';
 import HomeProvider from './contexts/HomeContext';
+import VisitsProvider from './contexts/VisitsContext';
 
 // Public pages
 import LandingPage from './pages/connect-flow/LandingPage';
@@ -15,7 +16,10 @@ import CreateCodePage from './pages/connect-flow/CreateCodePage';
 import EnterCodePage from './pages/connect-flow/EnterCodePage';
 import ActivitiesPage from './pages/activites-flow/ActivitiesPage';
 import VisitsPage from './pages/visits-flow/VisitsPage';
+import CreateVisitPage from './pages/visits-flow/CreateVisitPage';
 import WishesPage from './pages/WishesPage';
+import ViewEditVisitPage from './pages/visits-flow/ViewEditVisitPage';
+import VisitSchedulePage from './pages/visits-flow/VisitSchedulePage';
 
 function App() {
   return (
@@ -45,13 +49,20 @@ function App() {
               } 
             />
             <Route 
-              path="/visits" 
+              path="/visits"
               element={
                 <ProtectedRoute>
-                  <VisitsPage />
+                  <VisitsProvider>
+                    <Outlet />
+                  </VisitsProvider>
                 </ProtectedRoute>
-              } 
-            />
+              }
+            >
+              <Route index element={<VisitsPage />} />
+              <Route path="add" element={<CreateVisitPage />} />
+              <Route path=":id" element={<ViewEditVisitPage />} />
+              <Route path=":id/schedule" element={<VisitSchedulePage />} />
+            </Route>
             <Route 
               path="/wishes" 
               element={

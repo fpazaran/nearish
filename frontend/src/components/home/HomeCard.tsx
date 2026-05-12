@@ -1,5 +1,5 @@
 import React from 'react'
-import RoundedIconRectangleButton from './buttons/RoundedIconRectangleButton'
+import RoundedIconRectangleButton from '../buttons/RoundedIconRectangleButton'
 
 interface HomeCardProps {
   icon?: React.ReactNode;

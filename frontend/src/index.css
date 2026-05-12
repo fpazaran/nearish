@@ -1,5 +1,33 @@
 @import "tailwindcss";
 
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .pink-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: var(--medium_pink) var(--lightest_pink);
+  }
+  .pink-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .pink-scrollbar::-webkit-scrollbar-track {
+    background: var(--lightest_pink);
+    border-radius: 999px;
+  }
+  .pink-scrollbar::-webkit-scrollbar-thumb {
+    background: var(--medium_pink);
+    border-radius: 999px;
+  }
+  .pink-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: var(--darker_pink);
+  }
+}
+
 @theme {
   --darker_pink: #FD7979;
   --medium_pink: #FDACAC;
@@ -8,4 +36,9 @@
   --dark-medium-pink: #FAE1DF;
   --dark-dark-pink: #FDD2D1;
   --darker_pink-glow: rgba(253, 121, 121, 0.5);
+  --color-pink-dark: #FD7979;
+  --color-pink-medium: #FDACAC;
+  --color-pink-bg: #FAE1DF;
+  --color-pink-light: #FDF0EF;
+  --color-pink-medium-dark: #FFCDC9;
 }

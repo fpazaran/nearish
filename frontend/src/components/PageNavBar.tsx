@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 function PageNavBar() {
   const navigate = useNavigate()
   const handleBack = () => {
-    navigate('/home')
+    navigate(-1)
   }
   return (
     <div className='w-full h-16 absolute top-0 left-0 pt-4 px-6 flex flex-row items-center justify-center gap-4'>

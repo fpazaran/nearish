@@ -1,0 +1,68 @@
+# Production stack: immutable images (no bind mounts).
+#
+# Vite bakes env at build time. Compose substitutes `${VITE_*}` in `build.args` from its own
+# environment. Typical loading mechanisms:
+#
+#   docker compose -f compose.prod.yaml --env-file frontend/.env -p nearish-prod up --build -d
+#
+# Alternatively put/copy vars into a repo-root `.env` (Compose reads it automatically when cwd
+# is this folder); git ignores `.env` — avoid committing secrets inside YAML.
+
+#
+# `VITE_API_URL` must be reachable from users' browsers (not "http://backend:8000").
+# For Compose on localhost, default is http://localhost:8000.
+#
+# Use a distinct project name so Postgres volume is not shared with dev:
+#   -p nearish-prod
+
+services:
+  backend:
+    build:
+      context: ./backend
+    env_file:
+      - ./backend/.env
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-nearish}:${DB_PASSWORD:-nearish}@db:5432/${DB_NAME:-nearish}
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      target: production
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:8000}
+        VITE_APIKEY: ${VITE_APIKEY}
+        VITE_AUTHDOMAIN: ${VITE_AUTHDOMAIN}
+        VITE_PROJECTID: ${VITE_PROJECTID}
+        VITE_STORAGEBUCKET: ${VITE_STORAGEBUCKET}
+        VITE_MESSAGINGSENDERID: ${VITE_MESSAGINGSENDERID}
+        VITE_APPID: ${VITE_APPID}
+        VITE_MEASUREMENTID: ${VITE_MEASUREMENTID}
+    ports:
+      # nginx listens on :80 inside the image — map host 3000 to keep your URL habit
+      - "3000:80"
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-nearish}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-nearish}
+      POSTGRES_DB: ${DB_NAME:-nearish}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  db_data:

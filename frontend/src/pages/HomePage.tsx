@@ -12,10 +12,10 @@ import { currentDay } from '../utils/visits'
 import { useNavigate } from 'react-router-dom'
 
 // components
-import HomeNavBar from '../components/HomeNavBar'
+import HomeNavBar from '../components/home/HomeNavBar'
 import Background from '../components/Background'
 import Loading from './Loading'
-import HomeCard from '../components/HomeCard'
+import HomeCard from '../components/home/HomeCard'
 import RedRoundedRect from '../components/buttons/RedRoundedRect'
 import Timeline from '../components/Timeline'
 
@@ -54,7 +54,14 @@ function HomePage() {
   }
 
   const handlePlanVisit = () => {
-    navigate('/visits')
+    navigate('/visits/add')
+  }
+
+  const handlePlanSchedule = () => {
+    if (home.visit) {
+      console.log(home.visit)
+      navigate(`/visits/${home.visit.id}/schedule`)
+    }
   }
 
   const handleBrowseActivities = () => {
@@ -115,7 +122,7 @@ function HomePage() {
           <HomeCard title="Browse Activities" description="Find something fun to do for your next visit!"
             icon={<FiSearch className="text-2xl text-[var(--darker_pink)]" />} onClick={handleBrowseActivities} />
           <HomeCard title="Plan Visit" description="Schedule daily activities for your next visit"
-            icon={<FiCalendar className="text-2xl text-[var(--darker_pink)] " />} onClick={handlePlanVisit} />
+            icon={<FiCalendar className="text-2xl text-[var(--darker_pink)] " />} onClick={handlePlanSchedule} />
           <HomeCard title="Wishlist" description="Browse for things your partner might like (or add to yours)"
             icon={<FaRegHeart className="text-2xl text-[var(--darker_pink)]" />} onClick={handleWishlist} />
         </div>
