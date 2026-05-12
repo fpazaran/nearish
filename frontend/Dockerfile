@@ -1,75 +1,48 @@
 # syntax=docker/dockerfile:1
-
-# Comments are provided throughout this file to help you get started.
-# If you need more help, visit the Dockerfile reference guide at
-# https://docs.docker.com/go/dockerfile-reference/
-
-# Want to help us make this template better? Share your feedback here: https://forms.gle/ybq9Krt8jtBL3iCk7
+#
+# Targets:
+#   development — Node only (Compose dev: bind mount + vite; see compose.yaml target)
+#   production  — vite build + nginx static (Compose prod / real deploy)
 
 ARG NODE_VERSION=22.18.0
 
 ################################################################################
-# Use node image for base image for all stages.
-FROM node:${NODE_VERSION}-alpine as base
-
-# Set working directory for all build stages.
+FROM node:${NODE_VERSION}-alpine AS development
 WORKDIR /usr/src/app
-
-
-################################################################################
-# Create a stage for installing production dependecies.
-FROM base as deps
-
-# Download dependencies as a separate step to take advantage of Docker's caching.
-# Leverage a cache mount to /root/.npm to speed up subsequent builds.
-# Leverage bind mounts to package.json and package-lock.json to avoid having to copy them
-# into this layer.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci --omit=dev
+EXPOSE 3000
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000", "--strictPort"]
 
 ################################################################################
-# Create a stage for building the application.
-FROM deps as build
-
-# Download additional development dependencies before building, as some projects require
-# "devDependencies" to be installed to build. If you don't need this, remove this step.
-RUN --mount=type=bind,source=package.json,target=package.json \
-    --mount=type=bind,source=package-lock.json,target=package-lock.json \
-    --mount=type=cache,target=/root/.npm \
-    npm ci
-
-# Copy the rest of the source files into the image.
+FROM node:${NODE_VERSION}-alpine AS builder
+WORKDIR /usr/src/app
+COPY package.json package-lock.json ./
+RUN npm ci
 COPY . .
-# Run the build script.
+
+# Vite bakes import.meta.env at build time (.env is not copied — use build args below).
+ARG VITE_API_URL
+ARG VITE_APIKEY
+ARG VITE_AUTHDOMAIN
+ARG VITE_PROJECTID
+ARG VITE_STORAGEBUCKET
+ARG VITE_MESSAGINGSENDERID
+ARG VITE_APPID
+ARG VITE_MEASUREMENTID
+
+ENV VITE_API_URL=$VITE_API_URL \
+    VITE_APIKEY=$VITE_APIKEY \
+    VITE_AUTHDOMAIN=$VITE_AUTHDOMAIN \
+    VITE_PROJECTID=$VITE_PROJECTID \
+    VITE_STORAGEBUCKET=$VITE_STORAGEBUCKET \
+    VITE_MESSAGINGSENDERID=$VITE_MESSAGINGSENDERID \
+    VITE_APPID=$VITE_APPID \
+    VITE_MEASUREMENTID=$VITE_MEASUREMENTID
+
 RUN npm run build
 
 ################################################################################
-# Create a new stage to run the application with minimal runtime dependencies
-# where the necessary files are copied from the build stage.
-FROM base as final
-
-# Use production node environment by default.
-ENV NODE_ENV production
-
-# Copy package.json so that package manager commands can be used.
-COPY package.json .
-
-# Copy the production dependencies from the deps stage and also
-# the built application from the build stage into the image.
-COPY --from=deps /usr/src/app/node_modules ./node_modules
-COPY --from=build /usr/src/app/./ ././
-
-# Ensure the non-root `node` user can write (Vite temp files, etc.).
-RUN chown -R node:node /usr/src/app
-
-# Run the application as a non-root user.
-USER node
-
-
-# Expose the port that the application listens on.
-EXPOSE 3000
-
-# Run the application.
-CMD npm run dev -- --host 0.0.0.0 --port 3000 --strictPort
+FROM nginx:1.27-alpine AS production
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
