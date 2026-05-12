@@ -4,8 +4,15 @@ services:
       context: ./backend
     env_file:
       - ./backend/.env
+    # Overrides backend/.env so the API reaches Postgres by Docker service name `db`.
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-nearish}:${DB_PASSWORD:-nearish}@db:5432/${DB_NAME:-nearish}
+    depends_on:
+      db:
+        condition: service_healthy
     ports:
       - "8000:8000"
+
   frontend:
     build:
       context: ./frontend
@@ -13,3 +20,24 @@ services:
       - ./frontend/.env
     ports:
       - "3000:3000"
+
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:-nearish}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-nearish}
+      POSTGRES_DB: ${DB_NAME:-nearish}
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U \"$$POSTGRES_USER\" -d \"$$POSTGRES_DB\""]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+
+volumes:
+  db_data:
